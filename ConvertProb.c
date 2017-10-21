@@ -55,7 +55,6 @@ int main(){
     if(input[0] == '0' && input[1] == 'x'){
         n = hex_to_uint(input);
     }
-    /*
     // Decimal
     else if(input[0] >= '0' && input[0] <= '9'){
         n = dec_to_uint(input);
@@ -74,6 +73,7 @@ int main(){
     }
 
     // Print results
+    /*
     printf("The decimal value of %s is %u\n", input, n);
     uint_to_hex(n, output);
     printf("The hexadecimal value of %s is %s\n", input, output);
@@ -81,7 +81,7 @@ int main(){
     printf("The octal value of %s is %s\n", input, output);
     uint_to_bin(n, output);
     printf("The binary value of %s is %s\n", input, output);
-*/
+	*/
 
     return 0;
 }
@@ -107,28 +107,26 @@ unsigned int hex_to_uint(char *input){
     int j;
 
     // Loop through value part of input string
-     for(j = strlen(input) - 1; j >= 2; j--)
-     {
-
+    multiplier = 16;
+    for(j = 2; input[j] != '\0'; j++)
+    {
     	// If between 0 and 9 add 0 to 9 to res with multiplier
     	if(input[j] >= '0' && input[j] <= '9')
     	{
-    		res += multiplier*(input[j]-48);
+    		res = res*multiplier + input[j] - 48;
     	}
     	// If between A and F add 10 to 15 to res with multiplier
     	else if(input[j] >= 'A' && input[j] <= 'F')
     	{
-    		res += multiplier*(input[j]-55);
+    		res = res*multiplier + input[j] - 55;
     	}
     	// Error - exit
     	else
     	{
-    		printf("INPUT ERROR - exiting...\n");
+    		printf("ERROR -- exiting...\n");
     		exit(2);
     	}
-        // Advance multiplier to next position value
-        multiplier *= 16;
-     }
+    }
 
     printf("%d\n", res);
     return res;
