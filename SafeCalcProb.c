@@ -52,7 +52,7 @@ int main(int argc, char *argv[]){
     // Write code here to test your functions
     // Uncomment code below when done
 
-    char in[] = "+ 3";
+    char in[] = "+ -1234";
     char* inp_ptr = in;
 
     int x = convert(inp_ptr);
@@ -400,6 +400,7 @@ int convert(char *input){
     // i is iterator for input string and should start at first numeric char
     // j is iterator for buffer where numeric chars are copied
     // This must test for chars between 0 and 9
+
     for(i = 0; input[j] != '\0' && error == 0;)
     {
         if(input[j] >= '0' && input[j] <= '9')
@@ -412,15 +413,26 @@ int convert(char *input){
 
     // i gets position of last numeric char in buffer
     buffer[i] = '\0';
+    printf("%s\n", buffer);
 
     // j is now used for pow function - start at zero
-    for(j = 0; i>= 0;)
-    {
-        // Construct integer from buffer using pow j increases and i decreases
-        int num = buffer[j] - 48;
-        res += mul(num, pow(10, i));
+    //  TODO -- make this work properly
 
-        j++; i--;
+    int x;
+    int y = 0;
+    for(x = strlen(buffer) - 1; x >= 0; x--)
+    {
+        //  TODO -- make this work properly
+        int mult = 1;
+        int z = 0;
+        for(z = 0; z < x; z++)
+        {
+            mult *= 10;
+        }
+        res += mult * (buffer[y]-48);
+        printf("res = %d\n", res);
+        y++;
+        printf("Successful loop #%d\n", y);
     }
 
     // Set sign for output
