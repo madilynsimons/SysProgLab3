@@ -44,6 +44,8 @@ int debugging = 0;
 // Main
 int main(int argc, char *argv[]){
 
+	printf("INT MAX = %d\n", INT_MAX);
+
     int res = 0;        // Cumulative result - running total
     int n = 0;          // For number conversion from input string
     char input[50];     // Input string
@@ -159,22 +161,11 @@ int add(int a, int b){
     // Call to _add() a and b and assign to result
     res = _add(a, b);
 
-    // Check for overflow - look at page 90 in book
-    if(( a > 0 && b > INT_MAX - a) ||
-        ( b > 0 && a > INT_MAX - b))
+    if( ((res ^ a) & (res ^ b)) < 0)
     {
-        // overflow
-        printf("OVERFLOW ERROR -- Exiting...\n");
-        exit(3);
-    }
-
-    // Check for underflow - look at page 90 in book
-    else if(( a < 0 && b < INT_MIN - a) || 
-        ( b < 0 && a < INT_MIN - b))
-    {
-        // underflow
-        printf("UNDERFLOW ERROR -- Exiting...\n");
-        exit(3);
+    	if(res > 0) printf("UNDERFLOW ERROR -- Exiting...\n");
+    	if(res < 0) printf("OVERFLOW ERROR -- Exiting...\n");
+    	exit(3);
     }
 
     if(debugging) printf("%d\n", res);
@@ -379,13 +370,13 @@ int convert(char *input){
     int error = 0;
 
     // Check for space in element 1
-    if(input[j] == ' ') j++;
+    if(input[j] == ' ') j = add(j, 1);
 
     // Check for negative integer at element 2
     if(input[j] == '-')
     {
         sign = 1;
-        j++;
+        j = add(j, 1);
     } 
 
     // Loop to copy all numeric chars to buffer
@@ -400,31 +391,27 @@ int convert(char *input){
             buffer[i] = input[j];
         }
         else error = 1;
-        i++; j++;
+        i = add(i, 1);
+        j = add(j, 1);
     }
 
     // i gets position of last numeric char in buffer
     buffer[i] = '\0';
-    printf("%s\n", buffer);
 
     // j is now used for pow function - start at zero
-    //  TODO -- make this work properly
 
-    int x;
-    int y = 0;
-    for(x = strlen(buffer) - 1; x >= 0; x--)
+    j = 0;
+    for(i = sub(i, 1); i >= 0; i = sub(i, 1))
     {
-        //  TODO -- make this work properly
         int mult = 1;
-        int z = 0;
-        for(z = 0; z < x; z++)
-        {
-            mult *= 10;
-        }
-        res += mult * (buffer[y]-48);
-        printf("res = %d\n", res);
-        y++;
-        printf("Successful loop #%d\n", y);
+
+        mult = pow(10, i);
+
+        buffer[j] = sub(buffer[j], 48);
+        mult = mul(mult, buffer[j]);
+        res = add(res, mult);
+
+        j = add(j, 1);
     }
 
     // Set sign for output
