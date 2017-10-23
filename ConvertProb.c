@@ -1,3 +1,8 @@
+/**
+ *  Lab 3
+ *  @Author:  Madilyn Simons
+ */
+
 /*
 
     Number converter

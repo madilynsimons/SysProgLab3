@@ -1,3 +1,8 @@
+/**
+ *  Lab 3
+ *  @Author:  Madilyn Simons
+ */
+
 /*
 
     Safe integer calculator - warns if an overflow or
