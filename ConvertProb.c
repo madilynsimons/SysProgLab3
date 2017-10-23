@@ -176,7 +176,7 @@ unsigned int oct_to_uint(char *input){
     for(j = 1; input[j] != '\0'; j++)
     {
     	// If between 0 and 9 add 0 to 9 to res with multiplier
-    	if(input[j] >= '0' && input[j] <= '9')
+    	if(input[j] >= '0' && input[j] <= '7')
     	{
     		res = res*multiplier + input[j] - 48;
     	}
@@ -207,7 +207,7 @@ unsigned int bin_to_uint(char *input){
     for(j = 1; input[j] != '\0'; j++)
     {
     	// If between 0 and 9 add 0 to 9 to res with multiplier
-    	if(input[j] >= '0' && input[j] <= '9')
+    	if(input[j] >= '0' && input[j] <= '1')
     	{
     		res = res*multiplier + input[j] - 48;
     	}
