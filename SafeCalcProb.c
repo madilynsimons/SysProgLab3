@@ -52,13 +52,6 @@ int main(int argc, char *argv[]){
     // Write code here to test your functions
     // Uncomment code below when done
 
-    char in[] = "+ -1234";
-    char* inp_ptr = in;
-
-    int x = convert(inp_ptr);
-    printf("%d\n", x);
-
-/*
     // Loop until quit is selected
     while(input[0] != 'q' && input[0] != 'Q'){
         // Show menu choices
@@ -107,7 +100,6 @@ int main(int argc, char *argv[]){
         }
 
     }
-    */
 
 
     return 0;
@@ -298,7 +290,7 @@ int div(int a, int b){
     if(neg(b) > 0) b = neg(b);
 
     // loop to calculate how many times can b be subtracted from a
-    while(a > b)
+    while(a >= b)
     {
         a = sub(a, b);
         cnt++;
