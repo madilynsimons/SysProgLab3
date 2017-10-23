@@ -25,6 +25,7 @@
 */
 
 #include <stdio.h>
+#include <limits.h>
 
 // Prototypes
 int _add(int a, int b);
@@ -36,6 +37,8 @@ int div(int a, int b);
 int mod(int a, int b);
 int pow(int a, int b);
 int convert(char *input);
+
+int debugging = 0;
 
 
 // Main
@@ -49,8 +52,15 @@ int main(int argc, char *argv[]){
     // Write code here to test your functions
     // Uncomment code below when done
 
+    char in[] = "+ 3";
+    char* inp_ptr = in;
+
+    int x = convert(inp_ptr);
+    printf("%d\n", x);
+
+/*
     // Loop until quit is selected
-/*    while(input[0] != 'q' && input[0] != 'Q'){
+    while(input[0] != 'q' && input[0] != 'Q'){
         // Show menu choices
         menu();
         // Print prompt with running total
@@ -58,7 +68,7 @@ int main(int argc, char *argv[]){
         // Get input string
         gets(input);
         // Clear screen
-        system("cls");
+        system("clear");
 
         // Switch on operator char input[0]
         switch (input[0]){
@@ -97,7 +107,8 @@ int main(int argc, char *argv[]){
         }
 
     }
-*/
+    */
+
 
     return 0;
 }
@@ -125,14 +136,21 @@ void menu(){
 */
 // Add operation using only bitwise operators
 int _add(int a, int b){
+    if(debugging) printf("_add( %d, %d ) = ", a, b);
     // Loop until b is zero
-
+    while(b != 0)
+    {
         // Find carry 1 bits - a AND b assign to carry
+        unsigned int carry = a & b;
 
         // Find non carry 1 bits - a XOR b assign to a
+        a = a ^ b;
 
-        // Multiply carry by 2 by shift and assign to b
+        // Multiply carry by 2 by shift and assign to b  
+        b = (carry <<= 1); 
+    }
 
+    if(debugging) printf("%d\n", a);
     return a;
 }
 
@@ -143,14 +161,31 @@ int _add(int a, int b){
 */
 // Safe add operation
 int add(int a, int b){
+    if(debugging) printf("add( %d, %d ) = ", a, b);
     // Declare int for result
     int res = 0;
     // Call to _add() a and b and assign to result
+    res = _add(a, b);
 
     // Check for overflow - look at page 90 in book
+    if(( a > 0 && b > INT_MAX - a) ||
+        ( b > 0 && a > INT_MAX - b))
+    {
+        // overflow
+        printf("OVERFLOW ERROR -- Exiting...\n");
+        exit(3);
+    }
 
     // Check for underflow - look at page 90 in book
+    else if(( a < 0 && b < INT_MIN - a) || 
+        ( b < 0 && a < INT_MIN - b))
+    {
+        // underflow
+        printf("UNDERFLOW ERROR -- Exiting...\n");
+        exit(3);
+    }
 
+    if(debugging) printf("%d\n", res);
     return res;
 }
 
@@ -162,8 +197,13 @@ int add(int a, int b){
 */
 // Define negation with ~ and safe add
 int neg(int a){
+    if(debugging) printf("neg( %d ) = ", a);
     // Return negation of a and add 1
-    return 0;   // Replace 0 with code
+    int res = 0;
+    res = add(~a, 1);
+
+    if(debugging) printf("%d\n", res);
+    return res;   // Replace 0 with code
 }
 
 
@@ -174,7 +214,13 @@ int neg(int a){
 */
 // Define safe subtract by safe add - negate b
 int sub(int a, int b){
-    return 0;  // Replace 0 with code
+    if(debugging) printf("sub( %d, %d ) = ", a, b);
+
+    int res = 0;
+    res = add(a, neg(b));
+
+    if(debugging) printf("%d\n", res);
+    return res;  // Replace 0 with code
 }
 
 
@@ -185,20 +231,43 @@ int sub(int a, int b){
 */
 // Define safe multiply by calling safe add b times
 int mul(int a, int b){
+    if(debugging) printf("mult( %d, %d ) = ", a, b);
+
+    if(a == 0 || b == 0) return 0;
+
     // Declare and initialize cumulative result
     int res = 0;
     // Declare sign of product - initially assume positive
+    unsigned int sign = 0;
+    if( a < 0 && b < 0 || a > 0 && b > 0) sign = 0;
+    else sign = 1;
 
-    // For efficiency - smaller number should be multiplier
+    if(neg(a) > 0) a = neg(a);
+    if(neg(b) > 0) b = neg(b);
 
-    // Absolute value of a and flip sign
+    int mult;
+    int term;
+    if(a < b)
+    {
+        mult = a;
+        term = b;
+    }
+    else
+    {
+        mult = b;
+        term = a;
+    }
 
-    // Absolute value of b and flip sign
-
-    // Accumulate result
+    int x;
+    for(x = 0; x < mult; x++)
+    {
+        res = add(res, term);
+    }
 
     // Set sign to output
+    if(sign) res = neg(res);
 
+    if(debugging) printf("%d\n", res);
     return res;
 }
 
@@ -209,18 +278,36 @@ int mul(int a, int b){
 */
 // Define safe divide by calling safe subtract b times
 int div(int a, int b){
+    if(debugging) printf("div( %d, %d ) = ", a, b);
+
+    if(a == 0) return 0;
+    if(b == 0)
+    { 
+        printf("DIVIDE BY 0 ERROR -- Exiting...\n");
+        exit(4);
+    }
+
     // Declare int to count how many times can b be subtracted from a
     int cnt = 0;
     // Declare sign
+    unsigned int sign = 0;
+    if( a < 0 && b < 0 || a > 0 && b > 0) sign = 0;
+    else sign = 1;
 
-    // Absolute value of a and flip sign
-
-    // Absolute value of b and flip sign
+    if(neg(a) > 0) a = neg(a);
+    if(neg(b) > 0) b = neg(b);
 
     // loop to calculate how many times can b be subtracted from a
+    while(a > b)
+    {
+        a = sub(a, b);
+        cnt++;
+    }
 
     // Set sign to output
+    if(sign) cnt = neg(cnt);
 
+    if(debugging) printf("%d\n", cnt);
     return cnt;
 }
 
@@ -230,12 +317,20 @@ int div(int a, int b){
 */
 // Define safe modulus by calling safe subtract
 int mod(int a, int b){
+    if(debugging) printf("mod( %d, %d ) = ", a, b);
     // Absolute value of a
+    if(neg(a) > 0 ) a = neg(a);
 
     // Absolute value of b
+    if(neg(b) > 0 ) b = neg(b);
 
     // Find remainder by repeated subtraction a - b
+    while(a > b)
+    {
+        a = sub(a, b);
+    }
 
+    if(debugging) printf("%d\n", a);
     return a;
 }
 
@@ -252,10 +347,17 @@ int mod(int a, int b){
 */
 // Define safe pow by calling safe multiply exp times
 int pow(int n, int exp){
+    if(debugging) printf("pow( %d, %d ) = ", n, exp);
+    if(exp == 0) return 1;
     // Declare int for result of n^exp
     int res = 0;
     // Loop and multiply to calculate n^exp
+    for(res = 1; exp > 0; exp--)
+    {
+        res = mul(res, n);
+    }
 
+    if(debugging) printf("%d\n", res);
     return res;
 }
 
@@ -272,29 +374,58 @@ int convert(char *input){
     // Declare int for result extracted from input
     int res = 0;
     // Declare int for sign of result
+    int sign = 0;
 
     // Declare two iterators
+    int i = 0;
+    int j = 1;
 
     // Declare a buffer for numeric chars
+    char buffer[100];
 
     // Set error to zero - no error found yet
+    int error = 0;
 
     // Check for space in element 1
+    if(input[j] == ' ') j++;
 
     // Check for negative integer at element 2
+    if(input[j] == '-')
+    {
+        sign = 1;
+        j++;
+    } 
 
     // Loop to copy all numeric chars to buffer
     // i is iterator for input string and should start at first numeric char
     // j is iterator for buffer where numeric chars are copied
     // This must test for chars between 0 and 9
+    for(i = 0; input[j] != '\0' && error == 0;)
+    {
+        if(input[j] >= '0' && input[j] <= '9')
+        {
+            buffer[i] = input[j];
+        }
+        else error = 1;
+        i++; j++;
+    }
 
     // i gets position of last numeric char in buffer
+    buffer[i] = '\0';
 
     // j is now used for pow function - start at zero
+    for(j = 0; i>= 0;)
+    {
+        // Construct integer from buffer using pow j increases and i decreases
+        int num = buffer[j] - 48;
+        res += mul(num, pow(10, i));
 
-    // Construct integer from buffer using pow j increases and i decreases
+        j++; i--;
+    }
 
     // Set sign for output
+    if(sign) res = neg(res);
+
     return res;
 }
 
