@@ -25,7 +25,6 @@
 */
 
 #include <stdio.h>
-#include <limits.h>
 
 // Prototypes
 int _add(int a, int b);
@@ -43,8 +42,6 @@ int debugging = 0;
 
 // Main
 int main(int argc, char *argv[]){
-
-	printf("INT MAX = %d\n", INT_MAX);
 
     int res = 0;        // Cumulative result - running total
     int n = 0;          // For number conversion from input string
@@ -301,6 +298,16 @@ int div(int a, int b){
 // Define safe modulus by calling safe subtract
 int mod(int a, int b){
     if(debugging) printf("mod( %d, %d ) = ", a, b);
+
+    if(b == 0)
+    {
+    	printf("DIVIDE BY ZERO ERROR -- Exiting...\n");
+    	exit(4);
+    }
+
+    int sign = 0;
+    if(b < 0 || a < 0) sign = 1;
+
     // Absolute value of a
     if(neg(a) > 0 ) a = neg(a);
 
@@ -312,6 +319,8 @@ int mod(int a, int b){
     {
         a = sub(a, b);
     }
+
+    if(sign) a = neg(a);
 
     if(debugging) printf("%d\n", a);
     return a;
